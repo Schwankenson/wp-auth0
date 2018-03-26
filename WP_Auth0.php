@@ -129,6 +129,7 @@ class WP_Auth0 {
 		$this->check_signup_status();
 
 		if ( $this->a0_options->get( 'auto_login' ) ) {
+		  
 			WP_Auth0_Nonce_Handler::getInstance()->setCookie();
 		}
 
