@@ -162,6 +162,28 @@ class WP_Auth0_Options extends WP_Auth0_Options_Generic {
 	}
 
 	/**
+	 * Get the tenant name from the domain
+	 *
+	 * @return string
+	 */
+	public function get_tenant_name() {
+		if ( ! ( $domain = $this->get( 'domain' ) ) ) {
+			return '';
+		}
+
+		$parts = explode( '.', $domain );
+		$tenant = $parts[0];
+		if ( strpos( $domain, 'au.auth0.com' ) !== false ) {
+			$tenant .= '@au';
+		} elseif ( strpos( $domain, 'eu.auth0.com' ) !== false ) {
+			$tenant .= '@eu';
+		} elseif ( strpos( $domain, 'auth0.com' ) !== false ) {
+			$tenant .= '@us';
+		}
+		return $tenant;
+	}
+
+	/**
 	 * Default settings when plugin is installed or reset
 	 *
 	 * @return array

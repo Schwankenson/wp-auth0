@@ -14,28 +14,8 @@ class WP_Auth0_Metrics {
 
 	public function render() {
 
-		$enabled_pages = array( 'wpa0', 'wpa0-setup', 'users', 'wpa0-users-export' );
-		$screen = get_current_screen();
-
-		if ( ( ! isset( $_REQUEST['page'] ) && empty( $screen ) )
-			|| ( isset( $_REQUEST['page'] ) && !in_array( $_REQUEST['page'], $enabled_pages ) && !empty( $screen ) && !in_array( $screen->id, $enabled_pages ) )
-		) {
+		if ( ! WP_Auth0_Admin::is_auth0_admin_page() ) {
 			return;
-		}
-
-		$domain = $this->a0_options->get( 'domain' );
-		$parts = explode( '.', $domain );
-
-		$tenant = $parts[0];
-
-		if ( strpos( $domain, 'au.auth0.com' ) !== false ) {
-			$tenant .= '@au';
-		}
-		elseif ( strpos( $domain, 'eu.auth0.com' ) !== false ) {
-			$tenant .= '@eu';
-		}
-		elseif ( strpos( $domain, 'auth0.com' ) !== false ) {
-			$tenant .= '@us';
 		}
 
 		if ( $this->a0_options->get( 'metrics' ) == 1 ) {
@@ -54,7 +34,7 @@ class WP_Auth0_Metrics {
           }
 
           var params = {
-            tenant:"<?php echo $tenant; ?>"
+            tenant:"<?php echo $this->a0_options->get_tenant_name(); ?>"
           };
 
           if (trackData) {

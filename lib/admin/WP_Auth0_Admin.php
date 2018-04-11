@@ -66,14 +66,42 @@ class WP_Auth0_Admin {
 	}
 
 	/**
+	 * Are we on an Auth0 admin page
+	 *
+	 * @param string $page_slug - page slug to check, or current if empty
+	 *
+	 * @return bool
+	 */
+	public static function is_auth0_admin_page( $page_slug = '' ) {
+		if ( ! is_admin() ) {
+			return FALSE;
+		}
+
+		if ( empty( $page_slug ) ) {
+			if ( ! empty( $_GET['page'] ) ) {
+				$page_slug = $_GET['page'];
+			} else {
+				return FALSE;
+			}
+		}
+
+		$admin_pages = array( 'wpa0', 'wpa0-errors', 'wpa0-users-export', 'wpa0-import-settings', 'wpa0-setup' );
+		if ( ! in_array( $page_slug, $admin_pages )  ) {
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Enqueue scripts for all Auth0 wp-admin pages
 	 */
 	public function admin_enqueue() {
-		$wpa0_pages = [ 'wpa0', 'wpa0-errors', 'wpa0-users-export', 'wpa0-import-settings', 'wpa0-setup' ];
-		$wpa0_curr_page = ! empty( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
-		if ( ! in_array( $wpa0_curr_page, $wpa0_pages )  ) {
+		if ( ! self::is_auth0_admin_page() ) {
 			return;
 		}
+
+		$wpa0_curr_page =  $_GET['page'];
 
 		if ( ! WP_Auth0::ready() ) {
 			add_action( 'admin_notices', array( $this, 'create_account_message' ) );
